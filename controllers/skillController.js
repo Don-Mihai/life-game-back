@@ -1,0 +1,67 @@
+// controllers/skillController.js
+const Skill = require('../models/Skill');
+
+// Получение навыков пользователя
+exports.fetchSkills = async (req, res) => {
+    const { userId } = req.query;
+    try {
+        const skills = await Skill.find({ userId });
+        res.json(skills);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// Добавление нового навыка
+exports.addSkill = async (req, res) => {
+    try {
+        const newSkill = new Skill(req.body);
+        const savedSkill = await newSkill.save();
+        res.json(savedSkill);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// Обновление навыка
+exports.updateSkill = async (req, res) => {
+    try {
+        const updatedSkill = await Skill.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true }
+        );
+        res.json(updatedSkill);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// Удаление навыка
+exports.deleteSkill = async (req, res) => {
+    try {
+        await Skill.findByIdAndDelete(req.params.id);
+        res.json({ message: 'Skill deleted' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// Обновление уровня навыка
+exports.updateSkillLevel = async (req, res) => {
+    const { levelIndex, updatedLevelData } = req.body;
+    try {
+        const skill = await Skill.findById(req.params.id);
+        if (!skill) return res.status(404).json({ message: 'Skill not found' });
+
+        skill.levels[levelIndex] = {
+            ...skill.levels[levelIndex]._doc,
+            ...updatedLevelData,
+        };
+
+        const updatedSkill = await skill.save();
+        res.json(updatedSkill);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
