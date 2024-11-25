@@ -1,10 +1,32 @@
 // models/User.js
 const mongoose = require('mongoose');
 
-const UserSchema = new mongoose.Schema({
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    // Другие поля пользователя
+// Создаем схему для характеристик
+const CharacteristicSchema = new mongoose.Schema({
+    label: { type: String, required: true },
+    value: { type: String, required: true },
+});
+
+// Основная схема пользователя
+const UserSchema = new mongoose.Schema(
+    {
+        firstName: { type: String, required: true },
+        email: { type: String, required: true, unique: true },
+        password: { type: String, required: true },
+        characteristics: [CharacteristicSchema], // Массив характеристик
+    },
+    { timestamps: true }
+);
+
+// Преобразование _id в id при сериализации в JSON
+UserSchema.set('toJSON', {
+    virtuals: true,
+    versionKey: false,
+    transform: (doc, ret) => {
+        ret.id = ret._id;
+        delete ret._id;
+        return ret;
+    },
 });
 
 module.exports = mongoose.model('User', UserSchema);

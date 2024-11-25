@@ -3,7 +3,7 @@ const Skill = require('../models/Skill');
 
 // Получение навыков пользователя
 exports.fetchSkills = async (req, res) => {
-    const { userId } = req.query;
+    const { userId } = req.params;
     try {
         const skills = await Skill.find({ userId });
         res.json(skills);
@@ -15,7 +15,15 @@ exports.fetchSkills = async (req, res) => {
 // Добавление нового навыка
 exports.addSkill = async (req, res) => {
     try {
-        const newSkill = new Skill(req.body);
+        const { name, levels } = req.body;
+        const userId = req.body.userId || req.params.userId; // Получаем userId из тела запроса или параметров
+
+        const newSkill = new Skill({
+            name,
+            userId,
+            levels,
+        });
+
         const savedSkill = await newSkill.save();
         res.json(savedSkill);
     } catch (err) {
@@ -26,11 +34,14 @@ exports.addSkill = async (req, res) => {
 // Обновление навыка
 exports.updateSkill = async (req, res) => {
     try {
+        const { name, levels } = req.body;
+
         const updatedSkill = await Skill.findByIdAndUpdate(
             req.params.id,
-            req.body,
+            { name, levels },
             { new: true }
         );
+
         res.json(updatedSkill);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -53,6 +64,10 @@ exports.updateSkillLevel = async (req, res) => {
     try {
         const skill = await Skill.findById(req.params.id);
         if (!skill) return res.status(404).json({ message: 'Skill not found' });
+
+        if (levelIndex < 0 || levelIndex >= skill.levels.length) {
+            return res.status(400).json({ message: 'Invalid level index' });
+        }
 
         skill.levels[levelIndex] = {
             ...skill.levels[levelIndex]._doc,

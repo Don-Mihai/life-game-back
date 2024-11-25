@@ -4,9 +4,23 @@ const User = require('../models/User');
 // Регистрация пользователя
 exports.register = async (req, res) => {
     try {
-        const newUser = new User(req.body);
+        const { firstName, email, password, characteristics } = req.body;
+
+        // Проверяем, не существует ли уже пользователь с таким email
+        const existingUser = await User.findOne({ email });
+        if (existingUser) return res.status(400).json({ message: 'Email already in use' });
+
+        // Создаем нового пользователя
+        const newUser = new User({
+            firstName,
+            email,
+            password, // Рекомендуется хешировать пароль
+            characteristics,
+        });
+
         const savedUser = await newUser.save();
-        res.json({ user: savedUser, userId: savedUser._id });
+
+        res.json(savedUser);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -14,12 +28,19 @@ exports.register = async (req, res) => {
 
 // Аутентификация пользователя
 exports.auth = async (req, res) => {
-    const { email, password } = req.query;
+    const { email, password } = req.body; // Рекомендуется использовать body, а не query
     try {
-        const user = await User.findOne({ email, password });
+        const user = await User.findOne({ email });
         if (!user) return res.status(401).json({ message: 'Invalid credentials' });
 
-        res.json(user);
+        // Сравнение паролей (для простоты без хеширования)
+        if (user.password !== password) return res.status(401).json({ message: 'Invalid credentials' });
+
+        // Убираем пароль из ответа
+        const userWithoutPassword = user.toObject();
+        delete userWithoutPassword.password;
+
+        res.json(userWithoutPassword);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -28,7 +49,7 @@ exports.auth = async (req, res) => {
 // Получение пользователя по ID
 exports.getById = async (req, res) => {
     try {
-        const user = await User.findById(req.params.id);
+        const user = await User.findById(req.params.id).select('-password');
         if (!user) return res.status(404).json({ message: 'User not found' });
 
         res.json(user);
@@ -40,11 +61,14 @@ exports.getById = async (req, res) => {
 // Редактирование пользователя
 exports.editUser = async (req, res) => {
     try {
+        const { firstName, email, characteristics } = req.body;
+
         const updatedUser = await User.findByIdAndUpdate(
             req.params.id,
-            req.body,
+            { firstName, email, characteristics },
             { new: true }
-        );
+        ).select('-password');
+
         res.json(updatedUser);
     } catch (err) {
         res.status(500).json({ error: err.message });
