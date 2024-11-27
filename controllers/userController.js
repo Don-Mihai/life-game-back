@@ -28,7 +28,7 @@ exports.register = async (req, res) => {
 
 // Аутентификация пользователя
 exports.auth = async (req, res) => {
-    const { email, password } = req.body; // Рекомендуется использовать body, а не query
+    const { email, password } = req.body; // Используйте body, а не query
     try {
         const user = await User.findOne({ email });
         if (!user) return res.status(401).json({ message: 'Invalid credentials' });
@@ -36,11 +36,13 @@ exports.auth = async (req, res) => {
         // Сравнение паролей (для простоты без хеширования)
         if (user.password !== password) return res.status(401).json({ message: 'Invalid credentials' });
 
-        // Убираем пароль из ответа
-        const userWithoutPassword = user.toObject();
-        delete userWithoutPassword.password;
+        // Применяем toJSON(), чтобы использовать трансформацию
+        const userJSON = user.toJSON();
 
-        res.json(userWithoutPassword);
+        // Удаляем пароль из ответа
+        delete userJSON.password;
+
+        res.json(userJSON);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
