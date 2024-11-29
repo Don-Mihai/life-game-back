@@ -1,7 +1,7 @@
 // models/User.js
 const mongoose = require('mongoose');
 
-// Создаем схему для характеристик
+// схема для характеристик
 const CharacteristicSchema = new mongoose.Schema({
     label: { type: String, required: true },
     value: { type: String, required: true },
