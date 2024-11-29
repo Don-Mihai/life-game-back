@@ -10,10 +10,13 @@ app.use(express.json());
 app.use(cors());
 
 // Подключение к MongoDB
-mongoose
-    .connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/life-game')
-    .then(() => console.log('Connected to MongoDB'))
-    .catch((err) => console.error(err));
+mongoose.connect('mongodb://localhost:27017/life-game', { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => {
+        console.log('Connected to MongoDB and database "life-game" is ready');
+    })
+    .catch(err => {
+        console.error('Connection error', err);
+    });
 
 // Подключение маршрутов
 const skillRoutes = require('./routes/skillRoutes');
