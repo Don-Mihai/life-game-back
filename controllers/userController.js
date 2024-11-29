@@ -36,7 +36,7 @@ exports.auth = async (req, res) => {
         // Сравнение паролей (для простоты без хеширования)
         if (user.password !== password) return res.status(401).json({ message: 'Invalid credentials' });
 
-        // Применяем toJSON(), чтобы использовать трансформацию
+
         const userJSON = user.toJSON();
 
         // Удаляем пароль из ответа
