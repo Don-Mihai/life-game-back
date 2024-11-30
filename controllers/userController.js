@@ -1,5 +1,6 @@
 // controllers/userController.js
 const User = require('../models/User');
+const mongoose = require("mongoose");
 
 // Регистрация пользователя
 exports.register = async (req, res) => {
@@ -50,8 +51,9 @@ exports.auth = async (req, res) => {
 
 // Получение пользователя по ID
 exports.getById = async (req, res) => {
+    const userId = mongoose.Types.ObjectId(req.params.id);
     try {
-        const user = await User.findById(req.params.id).select('-password');
+        const user = await User.findById(userId).select('-password');
         if (!user) return res.status(404).json({ message: 'User not found' });
 
         res.json(user);
@@ -62,11 +64,12 @@ exports.getById = async (req, res) => {
 
 // Редактирование пользователя
 exports.editUser = async (req, res) => {
+    const userId = mongoose.Types.ObjectId(req.params.id);
     try {
         const { firstName, email, characteristics } = req.body;
 
         const updatedUser = await User.findByIdAndUpdate(
-            req.params.id,
+            userId,
             { firstName, email, characteristics },
             { new: true }
         ).select('-password');

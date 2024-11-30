@@ -1,9 +1,14 @@
 // controllers/skillController.js
 const Skill = require('../models/Skill');
+const mongoose = require('mongoose');
 
 // Получение навыков пользователя
 exports.fetchSkills = async (req, res) => {
-    const { userId } = req.params;
+    const { userId: UserIdStr } = req.params;
+
+    // Преобразуем строку в ObjectId
+    const userId = mongoose.Types.ObjectId(UserIdStr);
+
     try {
         const skills = await Skill.find({ userId });
         res.json(skills);
@@ -35,9 +40,10 @@ exports.addSkill = async (req, res) => {
 exports.updateSkill = async (req, res) => {
     try {
         const { name, levels } = req.body;
+        const userId = mongoose.Types.ObjectId(req.params.id);
 
         const updatedSkill = await Skill.findByIdAndUpdate(
-            req.params.id,
+            userId,
             { name, levels },
             { new: true }
         );
@@ -50,8 +56,9 @@ exports.updateSkill = async (req, res) => {
 
 // Удаление навыка
 exports.deleteSkill = async (req, res) => {
+    const userId = mongoose.Types.ObjectId(req.params.id);
     try {
-        await Skill.findByIdAndDelete(req.params.id);
+        await Skill.findByIdAndDelete(userId);
         res.json({ message: 'Skill deleted' });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -61,8 +68,9 @@ exports.deleteSkill = async (req, res) => {
 // Обновление уровня навыка
 exports.updateSkillLevel = async (req, res) => {
     const { levelIndex, updatedLevelData } = req.body;
+    const userId = mongoose.Types.ObjectId(req.params.id);
     try {
-        const skill = await Skill.findById(req.params.id);
+        const skill = await Skill.findById(userId);
         if (!skill) return res.status(404).json({ message: 'Skill not found' });
 
         if (levelIndex < 0 || levelIndex >= skill.levels.length) {
