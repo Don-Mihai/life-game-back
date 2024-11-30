@@ -51,7 +51,7 @@ exports.auth = async (req, res) => {
 
 // Получение пользователя по ID
 exports.getById = async (req, res) => {
-    const userId = mongoose.Types.ObjectId(req.params.id);
+    const userId = new mongoose.Types.ObjectId(req.params.id);
     try {
         const user = await User.findById(userId).select('-password');
         if (!user) return res.status(404).json({ message: 'User not found' });
@@ -64,7 +64,7 @@ exports.getById = async (req, res) => {
 
 // Редактирование пользователя
 exports.editUser = async (req, res) => {
-    const userId = mongoose.Types.ObjectId(req.params.id);
+    const userId = new mongoose.Types.ObjectId(req.params.id);
     try {
         const { firstName, email, characteristics } = req.body;
 

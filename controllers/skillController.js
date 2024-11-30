@@ -7,7 +7,7 @@ exports.fetchSkills = async (req, res) => {
     const { userId: UserIdStr } = req.params;
 
     // Преобразуем строку в ObjectId
-    const userId = mongoose.Types.ObjectId(UserIdStr);
+    const userId = new mongoose.Types.ObjectId(UserIdStr);
 
     try {
         const skills = await Skill.find({ userId });
@@ -21,7 +21,7 @@ exports.fetchSkills = async (req, res) => {
 exports.addSkill = async (req, res) => {
     try {
         const { name, levels } = req.body;
-        const userId = req.body.userId || req.params.userId; // Получаем userId из тела запроса или параметров
+        const userId =  req.body.userId || req.params.userId; // Получаем userId из тела запроса или параметров
 
         const newSkill = new Skill({
             name,
@@ -40,7 +40,7 @@ exports.addSkill = async (req, res) => {
 exports.updateSkill = async (req, res) => {
     try {
         const { name, levels } = req.body;
-        const userId = mongoose.Types.ObjectId(req.params.id);
+        const userId = new mongoose.Types.ObjectId(req.params.id);
 
         const updatedSkill = await Skill.findByIdAndUpdate(
             userId,
@@ -56,7 +56,7 @@ exports.updateSkill = async (req, res) => {
 
 // Удаление навыка
 exports.deleteSkill = async (req, res) => {
-    const userId = mongoose.Types.ObjectId(req.params.id);
+    const userId = new mongoose.Types.ObjectId(req.params.id);
     try {
         await Skill.findByIdAndDelete(userId);
         res.json({ message: 'Skill deleted' });
@@ -68,7 +68,7 @@ exports.deleteSkill = async (req, res) => {
 // Обновление уровня навыка
 exports.updateSkillLevel = async (req, res) => {
     const { levelIndex, updatedLevelData } = req.body;
-    const userId = mongoose.Types.ObjectId(req.params.id);
+    const userId = new mongoose.Types.ObjectId(req.params.id);
     try {
         const skill = await Skill.findById(userId);
         if (!skill) return res.status(404).json({ message: 'Skill not found' });
