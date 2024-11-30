@@ -68,7 +68,7 @@ exports.deleteSkill = async (req, res) => {
 
 // Обновление уровня навыка
 exports.updateSkillLevel = async (req, res) => {
-    const { levelIndex, updatedLevelData } = req.body;
+    const { levelIndex, description } = req.body;
     const skillId = new mongoose.Types.ObjectId(req.body.id || req.params.id);
     try {
         const skill = await Skill.findById(skillId);
@@ -80,7 +80,7 @@ exports.updateSkillLevel = async (req, res) => {
 
         skill.levels[levelIndex] = {
             ...skill.levels[levelIndex]._doc,
-            ...updatedLevelData,
+            description,
         };
 
         const updatedSkill = await skill.save();
