@@ -78,10 +78,14 @@ exports.updateSkillLevel = async (req, res) => {
             return res.status(400).json({ message: 'Invalid level index' });
         }
 
+        console.log('skill', skill)
+
         skill.levels[levelIndex] = {
             ...skill.levels[levelIndex]._doc,
             description,
         };
+
+        console.log('updatedSkill', skill)
 
         const updatedSkill = await skill.save();
         res.json(updatedSkill);
