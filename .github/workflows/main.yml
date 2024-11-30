@@ -14,13 +14,35 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-        # Шаг 2: Настройка SSH
+      # Шаг 2: Настройка SSH
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.DEPLOY_KEY_FRONTEND }}
 
-      # Шаг 3: Выполнение скрипта деплоя бэкенда
+      # Шаг 3: Выполнение команд для деплоя бэкенда
       - name: Deploy Backend
         run: |
-          ssh -o StrictHostKeyChecking=no root@90.156.156.29 'bash /var/www/life-game-back/deploy-backend.sh'
+          # Шаг 3.1: Подключаемся к серверу и проверяем наличие проекта
+          ssh -o StrictHostKeyChecking=no root@90.156.156.29 << 'EOF'
+            echo "Подключение к серверу и переход в директорию проекта..."
+            cd /var/www/life-game-back || { echo "Не удалось перейти в директорию проекта."; exit 1; }
+
+            # Шаг 3.2: Обновляем репозиторий
+            echo "Обновление репозитория..."
+            git pull origin main || { echo "Ошибка при выполнении git pull."; exit 1; }
+
+            # Шаг 3.3: Установка зависимостей
+            echo "Установка зависимостей с помощью npm..."
+            npm install || { echo "Ошибка при установке зависимостей."; exit 1; }
+
+            # Шаг 3.4: Перезапуск бэкенда с использованием PM2
+            echo "Перезапуск бэкенда с использованием PM2..."
+            pm2 restart ecosystem.config.js || { echo "Ошибка при перезапуске PM2."; exit 1; }
+
+            # Проверка состояния процесса
+            echo "Проверка состояния процессов PM2..."
+            pm2 status || { echo "Ошибка при получении статуса PM2."; exit 1; }
+
+            echo "Деплой завершен успешно!"
+          EOF
