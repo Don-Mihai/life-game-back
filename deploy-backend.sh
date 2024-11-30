@@ -12,6 +12,6 @@ git pull origin main
 npm install
 
 # Перезапускаем бэкенд с помощью PM2
-pm2 restart life-game-back || pm2 start index.js --name life-game-back
+pm2 restart life-game-back || pm2 start ecosystem.config.js
 
 echo "Деплой бэкенда завершен."
