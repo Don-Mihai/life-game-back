@@ -32,8 +32,8 @@ exports.validateLink = async (req, res) => {
             return res.json({
                 success: 1, // Успешная валидация
                 meta: {
-                    title: metadata.title || 'No title found', // Заголовок страницы
-                    description: metadata.description || 'No description found', // Описание страницы
+                    // title: metadata.title || 'No title found', // Заголовок страницы
+                    // description: metadata.description || 'No description found', // Описание страницы
                     image: {
                         url: metadata.image || 'https://example.com/default-image.png' // Изображение
                     }
