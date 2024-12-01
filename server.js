@@ -21,9 +21,11 @@ mongoose.connect('mongodb://localhost:27017/life-game', { useNewUrlParser: true,
 // Подключение маршрутов
 const skillRoutes = require('./routes/skillRoutes');
 const userRoutes = require('./routes/userRoutes');
+const commonRoutes = require('./routes/commonRoutes');
 
 app.use('/skills', skillRoutes);
 app.use('/users', userRoutes);
+app.use('/common', commonRoutes);
 
 // Запуск сервера
 const PORT = process.env.PORT || 5000;
