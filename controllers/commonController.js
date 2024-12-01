@@ -1,5 +1,18 @@
 // Получение навыков пользователя
 const axios = require("axios");
+import metascraper from 'metascraper';
+import metascraperTitle from 'metascraper-title';
+import metascraperDescription from 'metascraper-description';
+import metascraperImage from 'metascraper-image';
+
+// Настройка метаскрапера для извлечения мета-данных
+const scraper = metascraper([
+    metascraperTitle(),
+    metascraperDescription(),
+    metascraperImage()
+]);
+
+
 exports.validateLink = async (req, res) => {
 
     const url = req.query.url || req.params.url;
@@ -9,14 +22,22 @@ exports.validateLink = async (req, res) => {
     }
 
     try {
-        // Пытаемся запросить URL
+        // Пытаемся запросить URL и извлечь его мета-данные
         const response = await axios.get(decodeURIComponent(url), { timeout: 5000 });
 
         if (response.status === 200) {
-            // Если ссылка доступна, возвращаем успешный результат
+            // Извлекаем мета-данные с помощью metascraper
+            const metadata = await scraper({ url: decodeURIComponent(url) });
+
             return res.json({
                 success: 1, // Успешная валидация
-                link: decodeURIComponent(url) // Возвращаем декодированный URL
+                meta: {
+                    title: metadata.title || 'No title found', // Заголовок страницы
+                    description: metadata.description || 'No description found', // Описание страницы
+                    image: {
+                        url: metadata.image || 'https://example.com/default-image.png' // Изображение
+                    }
+                }
             });
         } else {
             return res.status(400).json({ success: 0, message: 'Недоступная ссылка' });
