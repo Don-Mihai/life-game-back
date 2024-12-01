@@ -1,9 +1,9 @@
 // Получение навыков пользователя
 const axios = require("axios");
-import metascraper from 'metascraper';
-import metascraperTitle from 'metascraper-title';
-import metascraperDescription from 'metascraper-description';
-import metascraperImage from 'metascraper-image';
+const metascraper = require('metascraper');
+const metascraperTitle = require('metascraper-title');
+const metascraperDescription = require('metascraper-description');
+const metascraperImage = require('metascraper-image');
 
 // Настройка метаскрапера для извлечения мета-данных
 const scraper = metascraper([
