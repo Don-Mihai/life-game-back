@@ -1,7 +1,8 @@
 // Получение навыков пользователя
 const axios = require("axios");
 exports.validateLink = async (req, res) => {
-    const { url } = req.query; // Получаем параметр "url" из строки запроса
+
+    const url = req.query.url || req.params.url;
 
     if (!url || typeof url !== 'string') {
         return res.status(400).json({ success: 0, message: 'URL не передан или некорректен' });
