@@ -1,5 +1,6 @@
 // controllers/skillController.js
 const Skill = require('../models/Skill');
+const User = require('../models/User');
 const mongoose = require('mongoose');
 
 // Получение навыков пользователя
@@ -37,21 +38,43 @@ exports.addSkill = async (req, res) => {
     }
 };
 
-// Обновление навыка
 exports.updateSkill = async (req, res) => {
     try {
-        const { name, levels, tags } = req.body;
+        const { name, levels, tags, userId } = req.body; // userId нужно передавать в запросе
         const skillId = new mongoose.Types.ObjectId(req.body.id || req.params.id);
 
-        const updatedSkill = await Skill.findByIdAndUpdate(
-            //todo: тут походу айди скила нужен
-            skillId,
-            { name, levels, tags },
-            { new: true }
-        );
+        // Находим навык по ID
+        const updatedSkill = await Skill.findByIdAndUpdate(skillId, { name, levels, tags }, { new: true });
 
+        if (!updatedSkill) {
+            return res.status(404).json({ message: 'Skill not found' });
+        }
+
+        // Получаем пользователя
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Добавление уникальных тегов в пользователя
+        const existingTagTitles = user.tags.map(tag => tag.title);
+
+        // Фильтруем уникальные теги, которых нет в user.tags
+        const newTags = tags.filter(tag => !existingTagTitles.includes(tag.title));
+
+        if (newTags.length > 0) {
+            // Добавляем уникальные теги в массив tags пользователя
+            user.tags.push(...newTags);
+
+            // Сохраняем обновления в модели пользователя
+            await user.save();
+        }
+
+        // Отправляем ответ с обновленным навыком
         res.json(updatedSkill);
     } catch (err) {
+        console.error(err);
         res.status(500).json({ error: err.message });
     }
 };
