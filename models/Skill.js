@@ -13,7 +13,7 @@ const SkillSchema = new mongoose.Schema(
         name: { type: String, required: true }, // Название навыка
         userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
         levels: { type: [LevelSchema], default: [] }, // Массив уровней навыка
-        tags: { type: [String], default: [] }, // Массив тегов
+        tags: { type: [Object], default: [] }, // Массив тегов
     },
     { timestamps: true }
 );
