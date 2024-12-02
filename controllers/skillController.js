@@ -82,7 +82,7 @@ exports.updateSkill = async (req, res) => {
 exports.updateSkillsOrder = async (req, res) => {
     const { userId: userIdBody, skills } = req.body; // Получаем новый порядок навыков
 
-    const userId = userIdBody || req.params.userId; // Получаем userId из тела запроса или параметров
+    const userId = new mongoose.Types.ObjectId(userIdBody); 
 
     if (!skills || !Array.isArray(skills)) {
         return res.status(400).json({ error: 'skills should be an array' });
