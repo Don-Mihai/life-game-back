@@ -92,8 +92,9 @@ exports.updateSkillsOrder = async (req, res) => {
         // Обновляем порядок навыков для пользователя
         for (let i = 0; i < skills.length; i++) {
             const skill = skills[i];
+            const skillId = new mongoose.Types.ObjectId(skill.id);
             // Убедимся, что поле 'order' существует в схеме
-            await Skill.findByIdAndUpdate(skill.id, {
+            await Skill.findByIdAndUpdate(skillId, {
                 $set: { order: i }, // Обновляем поле 'order' для каждого навыка
             });
         }
