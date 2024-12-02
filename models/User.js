@@ -15,6 +15,7 @@ const UserSchema = new mongoose.Schema(
         password: { type: String, required: true },
         tags: [{ title: { type: String, unique: true } }], // Массив тегов для пользователя
         characteristics: [CharacteristicSchema], // Массив характеристик
+        order: { type: Number, required: true, default: 0 },
     },
     { timestamps: true }
 );
