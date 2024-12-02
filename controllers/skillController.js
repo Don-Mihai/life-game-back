@@ -40,8 +40,9 @@ exports.addSkill = async (req, res) => {
 
 exports.updateSkill = async (req, res) => {
     try {
-        const { name, levels, tags, userId } = req.body; // userId нужно передавать в запросе
+        const { name, levels, tags, userId: userIdBody } = req.body; // userId нужно передавать в запросе
         const skillId = new mongoose.Types.ObjectId(req.body.id || req.params.id);
+        const userId = new mongoose.Types.ObjectId(userIdBody); // userId нужно передавать в запросе
 
         // Находим навык по ID
         const updatedSkill = await Skill.findByIdAndUpdate(skillId, { name, levels, tags }, { new: true });
