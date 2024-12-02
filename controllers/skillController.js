@@ -20,13 +20,14 @@ exports.fetchSkills = async (req, res) => {
 // Добавление нового навыка
 exports.addSkill = async (req, res) => {
     try {
-        const { name, levels } = req.body;
-        const userId =  req.body.userId || req.params.userId; // Получаем userId из тела запроса или параметров
+        const { name, levels, tags } = req.body;
+        const userId = req.body.userId || req.params.userId; // Получаем userId из тела запроса или параметров
 
         const newSkill = new Skill({
             name,
             userId,
             levels,
+            tags,
         });
 
         const savedSkill = await newSkill.save();
@@ -39,13 +40,13 @@ exports.addSkill = async (req, res) => {
 // Обновление навыка
 exports.updateSkill = async (req, res) => {
     try {
-        const { name, levels } = req.body;
-        const skillId = new mongoose.Types.ObjectId(req.body.id ||req.params.id);
+        const { name, levels, tags } = req.body;
+        const skillId = new mongoose.Types.ObjectId(req.body.id || req.params.id);
 
         const updatedSkill = await Skill.findByIdAndUpdate(
             //todo: тут походу айди скила нужен
             skillId,
-            { name, levels },
+            { name, levels, tags },
             { new: true }
         );
 
