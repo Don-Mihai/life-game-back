@@ -11,7 +11,7 @@ exports.fetchSkills = async (req, res) => {
     const userId = new mongoose.Types.ObjectId(req.body.userId || UserIdStr);
 
     try {
-        const skills = await Skill.find({ userId });
+        const skills = await Skill.find({ userId }).sort('order');
         res.json(skills);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -78,6 +78,35 @@ exports.updateSkill = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
+exports.updateSkillsOrder = async (req, res) => {
+    const { userId: userIdBody, skills } = req.body; // Получаем новый порядок навыков
+
+    const userId = userIdBody || req.params.userId; // Получаем userId из тела запроса или параметров
+
+    if (!skills || !Array.isArray(skills)) {
+        return res.status(400).json({ error: 'skills should be an array' });
+    }
+
+    try {
+        // Обновляем порядок навыков для пользователя
+        for (let i = 0; i < skills.length; i++) {
+            const skill = skills[i];
+            // Убедимся, что поле 'order' существует в схеме
+            await Skill.findByIdAndUpdate(skill.id, {
+                $set: { order: i }, // Обновляем поле 'order' для каждого навыка
+            });
+        }
+
+        // Возвращаем обновленные навыки, отсортированные по полю 'order'
+        const updatedSkills = await Skill.find({ userId }).sort('order');
+        res.json(updatedSkills);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
+};
+
 
 // Удаление навыка
 exports.deleteSkill = async (req, res) => {
