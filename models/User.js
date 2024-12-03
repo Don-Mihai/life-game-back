@@ -13,7 +13,7 @@ const UserSchema = new mongoose.Schema(
         firstName: { type: String, required: true },
         email: { type: String, required: true, unique: true },
         password: { type: String, required: true },
-        tags: [{ title: { type: String, unique: true } }], // Массив тегов для пользователя
+        tags: [{ title: { type: String } }], // Массив тегов для пользователя
         characteristics: [CharacteristicSchema], // Массив характеристик
     },
     { timestamps: true }

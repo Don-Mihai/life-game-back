@@ -40,6 +40,7 @@ exports.addSkill = async (req, res) => {
 
 exports.updateSkill = async (req, res) => {
     try {
+        console.log('Received request to update skill with ID:', req.params.id);
         const { name, levels, tags, userId: userIdBody } = req.body; // userId нужно передавать в запросе
         const skillId = new mongoose.Types.ObjectId(req.params.id || req.query.id);
         const userId = new mongoose.Types.ObjectId(userIdBody); // userId нужно передавать в запросе
@@ -82,6 +83,7 @@ exports.updateSkill = async (req, res) => {
 
 exports.updateSkillsOrder = async (req, res) => {
     const { userId: userIdBody, skills } = req.body; // Получаем новый порядок навыков
+    console.log('Received request to update skills order with userId:', userIdBody);
 
     if (!mongoose.Types.ObjectId.isValid(userIdBody)) {
         return res.status(400).json({ error: 'Invalid userId format' });
@@ -116,10 +118,10 @@ exports.updateSkillsOrder = async (req, res) => {
     }
 };
 
-
 // Удаление навыка
 exports.deleteSkill = async (req, res) => {
     const skillId = new mongoose.Types.ObjectId(req.body.id || req.params.id);
+    console.log('Received request to delete skill with ID:', skillId);
     try {
         await Skill.findByIdAndDelete(skillId);
         res.json({ message: 'Skill deleted' });
@@ -132,6 +134,7 @@ exports.deleteSkill = async (req, res) => {
 exports.updateSkillLevel = async (req, res) => {
     const { levelIndex, description } = req.body;
     const skillId = new mongoose.Types.ObjectId(req.body.id || req.params.id);
+    console.log('Received request to update skill level with ID:', skillId);
     try {
         const skill = await Skill.findById(skillId);
         if (!skill) return res.status(404).json({ message: 'Skill not found' });
@@ -140,14 +143,14 @@ exports.updateSkillLevel = async (req, res) => {
             return res.status(400).json({ message: 'Invalid level index' });
         }
 
-        console.log('skill', skill)
+        console.log('skill', skill);
 
         skill.levels[levelIndex] = {
             ...skill.levels[levelIndex]._doc,
             description,
         };
 
-        console.log('updatedSkill', skill)
+        console.log('updatedSkill', skill);
 
         const updatedSkill = await skill.save();
         res.json(updatedSkill);
