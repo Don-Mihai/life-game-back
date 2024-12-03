@@ -83,7 +83,11 @@ exports.updateSkill = async (req, res) => {
 exports.updateSkillsOrder = async (req, res) => {
     const { userId: userIdBody, skills } = req.body; // Получаем новый порядок навыков
 
-    const userId = new mongoose.Types.ObjectId(userIdBody); 
+    if (!mongoose.Types.ObjectId.isValid(userIdBody)) {
+        return res.status(400).json({ error: 'Invalid userId format' });
+    }
+
+    const userId = new mongoose.Types.ObjectId(userIdBody);
 
     if (!skills || !Array.isArray(skills)) {
         return res.status(400).json({ error: 'skills should be an array' });
@@ -93,6 +97,9 @@ exports.updateSkillsOrder = async (req, res) => {
         // Обновляем порядок навыков для пользователя
         for (let i = 0; i < skills.length; i++) {
             const skill = skills[i];
+            if (!mongoose.Types.ObjectId.isValid(skill.id)) {
+                return res.status(400).json({ error: `Invalid skillId format at index ${i}` });
+            }
             const skillId = new mongoose.Types.ObjectId(skill.id);
             // Убедимся, что поле 'order' существует в схеме
             await Skill.findByIdAndUpdate(skillId, {
