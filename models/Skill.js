@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const LevelSchema = new mongoose.Schema({
     completed: { type: Boolean, required: true }, // Завершён ли уровень
     description: { type: String, required: true }, // Описание уровня в формате JSON
+    icon: { type: String }, // Иконка для уровня
 });
 
 // Основная схема для навыка
